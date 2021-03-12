@@ -103,9 +103,12 @@ int main() {
     struct Node *head=NULL;
     appendList(&head,pid+1);
 
-
-    int t = presentArr+1;
+    //Modified: Output with example is correct. Need to check for other custom test cases.
+    int t = presentArr;
     burst[pid]--;
+    waitTime[pid] += t-lastEnd[pid];
+    lastEnd[pid]=t+1;
+    t++;
     presentWeight = w1*burst[pid] + w2*priority[pid];
     
     
