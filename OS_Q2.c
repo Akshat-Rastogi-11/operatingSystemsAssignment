@@ -44,7 +44,10 @@ void appendList(struct Node** head_ref, int new_data)
 }  
 
 int main() {
-    int numProcess; scanf("%d",&numProcess);
+    int numProcess; 
+    printf("Enter the number of processes:");
+    scanf("%d",&numProcess);
+    printf("\n");
     int arrTime[numProcess]; // storing the arrival timings 
     double burst[numProcess]; // storing CPU burst
     double priority[numProcess]; // storing priority
@@ -61,10 +64,21 @@ int main() {
 
     /******* Taking inputs********/
     for(int i=0;i<numProcess;i++){
-        scanf("%d %lf %lf", &arrTime[i],&burst[i],&priority[i]);
+    	printf("Enter arrival time of P%d:",i+1);
+        scanf("%d", &arrTime[i]);
+        printf("Enter CPU burst cycle of P%d:",i+1);
+        scanf("%lf",&burst[i]);
+        printf("Enter priority of P%d:",i+1);
+        scanf("%lf",&priority[i]);
+        printf("\n");
     }
      
-    scanf("%lf %lf",&w1,&w2);
+    printf("Enter value of w1:");
+    scanf("%lf",&w1);
+    printf("Enter value of w2:");
+    scanf("%lf",&w2);
+    printf("\n");
+    
      
      /***** Initialising last end and wait time and status process ***************///
     
@@ -78,7 +92,7 @@ int main() {
     /************Starting the algorithm************/
     
     int pid ;
-    double presentWeight = DBL_MIN;
+    float presentWeight = FLT_MIN;
     int presentArr = INT_MAX;
     
     for(int i=0;i<numProcess;i++){
@@ -134,6 +148,12 @@ int main() {
                 if (w1*burst[i] + w2*priority[i] > presentWeight){
                     pid=i;
                 }
+                //Added to check Mudit's test case.
+                else if(w1*burst[i] + w2* priority[i] == presentWeight && !statusProcess[i])
+                {
+                    if(arrTime[i]<presentArr)
+                        pid=i;
+                }
             }
         }
         
@@ -156,7 +176,7 @@ int main() {
         if(burst[pid]==0){
             statusProcess[pid]=true;
             int arr = INT_MAX;
-            double weight = DBL_MIN;
+            float weight = FLT_MIN;
             
             //Find the next best process to schedule 
             //Edit by Samarpan: Added statusProcess[i] check condition so that an already finished process is not scheduled again 
@@ -185,16 +205,16 @@ int main() {
     int waitSum=0;
     for(int i=0;i<numProcess;i++){
         waitSum+= waitTime[i];
-        printf("wait time for process %d is %lf :",i+1,waitTime[i]); printf("\n");
+        printf("wait time for process %d is: %lf ",i+1,waitTime[i]); 
+        printf("\n");
     }
 
-    //****************printing avg time********************
+    // ****************printing avg time********************
     printf("\n");
     double avgTime = (double)waitSum/(double)numProcess;
-    printf("Average time is : %lf", avgTime);
-    printf("\n");
+    printf("Average time is : %lf \n", avgTime);
 
-    //***************printing of process execution order**********************
+    // **************printing of process execution order**********************
     while(head!=NULL)
     {   
         printf("P");
@@ -203,10 +223,10 @@ int main() {
             printf("->");
         head=head->next;
     }
-    printf("\n");
-    //****************** end time of each process************************
+    	printf("\n");
+    // ****************** end time of each process************************
     for(int i=0;i<numProcess;i++){
-        printf("process %d ended at %d",i+1, lastEnd[i] );
+        printf("P%d finished at: %d",i+1, lastEnd[i] );
         printf("\n");
     }
     
