@@ -10,32 +10,26 @@
 #define READ_END 0
 #define WRITE_END 1
 
-//stores the thread data
-typedef struct data {
-    int* int_arr;
-    int sI;
-    int eI;
-}data;
-
-//stores the max and min values of subarrays
-struct result{
-    int max;
-    int min;
-};
-
 //function for finding min and max of subarrays
 void* find_min_max(void* p) {
-    data* ptr = (data*)p;
-    int startInd = ptr->sI;
-    int endInd = ptr->eI;
-    struct result* max_min = (struct result*)calloc(2, sizeof(int));
-    max_min->min = ptr->int_arr[startInd];
-    max_min->max = ptr->int_arr[startInd];
-    for(int i=startInd+1; i<=endInd; i++) {
-        if(ptr->int_arr[i]<max_min->min) max_min->min = ptr->int_arr[i];
-        if(ptr->int_arr[i]>max_min->max) max_min->max = ptr->int_arr[i];
+    
+    struct data{
+        int startInd;
+        int endInd;
+        int *int_arr;
+        int min;
+        int max;
+    };
+        
+    struct data* args = (struct data*)p;
+    
+    args->min = args->int_arr[args->startInd];
+    args->max = args->int_arr[args->startInd];
+    for(int i=args->startInd+1; i<=args->endInd; i++) {
+        if(args->int_arr[i] < args->min) args->min = args->int_arr[i];
+        if(args->int_arr[i] > args->max) args->max = args->int_arr[i];
     }
-    pthread_exit(max_min);
+    pthread_exit(args);
 }
 
 int main(){
@@ -90,7 +84,7 @@ int main(){
         close(fd1[WRITE_END]);
     }
     else {
-        close(fd[WRITE_END]);
+        close(fd1[WRITE_END]);
         read(fd1[READ_END],&a,sizeof(int));
         printf("Child1 received %d\n",a);
         int term1 = 1, term2 = 1, nextTerm = 0;
@@ -156,40 +150,53 @@ int main(){
         }
         close(fd4[READ_END]);
 
-        //array that stores the thread data
-        data thread_data[a];
-
         int element_no = n3/a; //no. of elements in each subarray
         int temp = 0;
-
-        for(int k=0; k<a; k++) {
-            thread_data[k].int_arr = arr;
-            thread_data[k].sI = temp;
-            thread_data[k].eI = temp+element_no-1;
-            temp += element_no;
-        }
-
-        //assigning the values in the array of thread data
-
-        //creating thread
-        int i=0;
+        
         pthread_t tid[a];
 
+        //local struct that stores all the data
+        struct data{
+                int startInd;
+                int endInd;
+                int *int_arr;
+                int min;
+                int max;
+        };
+        
+        //array storing thread data
+        struct data args[a];
+
+        for(int i=0; i<a; i++) {
+            args[i].int_arr = arr;
+            args[i].startInd = temp;
+            args[i].endInd = temp+element_no-1;
+
+            pthread_create(&tid[i], NULL, find_min_max, &args[i]);
+            temp += element_no;
+            
+        }
+        
+        temp =0;
+        
         //will store the final value
         int final_min=INT_MAX;
         int final_max=INT_MIN;
-
-        while(i<a) {
-            printf("\nLower bound for Thread%d is %d", i+1, thread_data[i].sI);
-            printf("\nUpper bound for Thread%d is %d", i+1, thread_data[i].eI);
-
-            pthread_create(&tid[i], NULL, find_min_max, &thread_data[i]);
-            struct result* final;
-            pthread_join(tid[i], (void**)&final); // return the min and max of the subarray
-            printf("\nComputed by Thread%d: max = %d, min = %d", i+1, final->max, final->min);
-            if(final->min < final_min) final_min = final->min;
-            if(final->max > final_max) final_max = final->max;
-            i++;
+            
+        for(int i=0; i<a; i++) {
+            
+            args[i].startInd = temp;
+            args[i].endInd = temp+element_no-1;
+            printf("\nLower bound for Thread%d is %d", i+1, args[i].startInd);
+            printf("\nUpper bound for Thread%d is %d", i+1, args[i].endInd);
+            
+            pthread_join(tid[i], (void **)&args[i]); // return the min and max of the subarray
+            
+            printf("\nComputed by Thread%d: max = %d, min = %d", i+1, args[i].max, args[i].min);
+            if(args[i].min < final_min) final_min = args[i].min;
+            if(args[i].max > final_max) final_max = args[i].max;
+            
+            temp += element_no;
         }
 
         printf("\nCalculated by Child2: max = %d, min = %d\n", final_max, final_min);
