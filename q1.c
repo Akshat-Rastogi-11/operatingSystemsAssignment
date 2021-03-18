@@ -220,10 +220,10 @@ int main(){
 
     else {
         read(fd5[0],&a,sizeof(int));
-        printf("Child3 received 5 for factorial computation %d\n",a);
+        printf("Child3 received 5 for factorial computation %d\n",e);
         int ans = 1;
         printf("Factorial computed by Child3 is ");
-        for (int i = 2; i <= a; ++i) {
+        for (int i = 2; i <= e; ++i) {
             ans = ans*i;
         }
         printf( "%d \n",ans );
