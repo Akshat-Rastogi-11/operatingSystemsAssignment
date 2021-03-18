@@ -7,6 +7,10 @@
 #include<pthread.h>
 #include<limits.h>
 
+
+#define READ_END 0
+#define WRITE_END 1
+
 //function for finding min and max of subarrays
 void* find_min_max(void* p) {
 
@@ -77,15 +81,15 @@ int main(){
     else if(p>0){
         printf("Enter to parent the no. of terms of Fibonacci series: ");
         scanf("%d",&n1);
-        close(fd1[0]);
-        write(fd1[1],&n1,sizeof(int));
+        close(fd1[READ_END]);
+        write(fd1[WRITE_END],&n1,sizeof(int));
         wait(NULL);
-        close(fd1[1]);
+        close(fd1[WRITE_END]);
     }
     //child process
     else {
-        close(fd1[1]);
-        read(fd1[0],&a,sizeof(int));
+        close(fd1[WRITE_END]);
+        read(fd1[READ_END],&a,sizeof(int));
         printf("Child1 received %d\n",a);
         int term1 = 1, term2 = 1, nextTerm = 0;
         printf("The Fibonacci Series printed by Child1 is: ");
@@ -96,7 +100,7 @@ int main(){
             term2 = nextTerm;
         }
         printf( "\n" );
-        close(fd1[0]);
+        close(fd1[READ_END]);
         exit(0);
     }
 
@@ -112,9 +116,9 @@ int main(){
     else if(p>0){
         printf("Enter to parent the no. of child threads to be created: ");
         scanf("%d",&n2);
-        close(fd2[0]);
-        write(fd2[1],&n2,sizeof(int));
-        close(fd2[1]);
+        close(fd2[READ_END]);
+        write(fd2[WRITE_END],&n2,sizeof(int));
+        close(fd2[WRITE_END]);
         for(int x=0;x<255;x++){
         	for(int y=0;y<255;y++){
         		;
@@ -122,9 +126,9 @@ int main(){
         }
         printf("Enter to parent number of array elements for Child2: ");
         scanf("%d",&n3);
-        close(fd3[0]);
-        write(fd3[1],&n3,sizeof(int));
-        close(fd3[1]);
+        close(fd3[READ_END]);
+        write(fd3[WRITE_END],&n3,sizeof(int));
+        close(fd3[WRITE_END]);
         for(int x=0;x<255;x++){
         	for(int y=0;y<255;y++){
         		;
@@ -132,33 +136,33 @@ int main(){
         }
         int values[n3];
         printf("Enter to parent the array elements for Child2: ");
-        close(fd4[0]);
+        close(fd4[READ_END]);
         for(int i = 0; i < n3; ++i) {
             scanf("%d", &values[i]);
-            write(fd4[1],&values[i],sizeof(int));
+            write(fd4[WRITE_END],&values[i],sizeof(int));
         }
-        close(fd4[1]);
+        close(fd4[WRITE_END]);
         wait(NULL);
 
 
     }
     //child process
     else{
-        close(fd2[1]);
-        read(fd2[0],&b,sizeof(int));
+        close(fd2[WRITE_END]);
+        read(fd2[READ_END],&b,sizeof(int));
         printf("Child2 received %d as no. of threads \n",b);
-        close(fd2[0]);
-        close(fd3[1]);
-        read(fd3[0],&c,sizeof(int));
+        close(fd2[READ_END]);
+        close(fd3[WRITE_END]);
+        read(fd3[READ_END],&c,sizeof(int));
         printf("Child2 received %d as number of array elements \n",c);
-        close(fd3[0]);
+        close(fd3[READ_END]);
         int* arr = (int*) calloc(c, sizeof(int));
-	close(fd4[1]);
+	close(fd4[WRITE_END]);
         for(int i = 0; i < c; ++i) {
-            read(fd4[0],&d,sizeof(int));
+            read(fd4[READ_END],&d,sizeof(int));
             arr[i] = d;
         }
-        close(fd4[0]);
+        close(fd4[READ_END]);
 
         int element_no = c/b; //no. of elements in each subarray
         int temp = 0;
@@ -229,17 +233,17 @@ int main(){
     else if(p>0){
         printf("Enter the no. for factorial computation in parent: ");
         scanf("%d",&n4);
-        close(fd5[0]);
-        write(fd5[1],&n4,sizeof(int));
+        close(fd5[READ_END]);
+        write(fd5[WRITE_END],&n4,sizeof(int));
         wait(NULL);
         printf("GoodBye");
-        close(fd1[1]);
+        close(fd5[WRITE_END]);
     }
 
 	//child process
     else {
-    	close(fd5[1]);
-        read(fd5[0],&e,sizeof(int));
+    	close(fd5[WRITE_END]);
+        read(fd5[READ_END],&e,sizeof(int));
         printf("Child3 received 5 for factorial computation %d\n",e);
         int ans = 1;
         printf("Factorial computed by Child3 is ");
@@ -247,7 +251,7 @@ int main(){
             ans = ans*i;
         }
         printf( "%d \n",ans );
-        close(fd5[0]);
+        close(fd5[READ_END]);
         exit(0);
     }
 
