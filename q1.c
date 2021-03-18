@@ -209,10 +209,10 @@ int main(){
 
     else if(p>0){
         printf("Enter the no. for factorial computation in parent: ");
-        scanf("%d",&n1);
-        write(fd5[1],&n1,sizeof(int));
+        scanf("%d",&n4);
+        write(fd5[1],&n4,sizeof(int));
         wait(NULL);
-        printf("GoodBye!");
+        printf("GoodBye");
         close(fd1[1]);
     }
 
