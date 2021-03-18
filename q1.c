@@ -10,7 +10,7 @@
 //function for finding min and max of subarrays
 void* find_min_max(void* p) {
 
-    struct arguments_passed{
+    struct data{
         int startInd;
         int endInd;
         int *int_arr;
@@ -18,7 +18,7 @@ void* find_min_max(void* p) {
         int max;
     };
 
-    struct arguments_passed* args = (struct arguments_passed*)p;
+    struct data* args = (struct data*)p;
 
     args->min = args->int_arr[args->startInd];
     args->max = args->int_arr[args->startInd];
@@ -155,7 +155,7 @@ int main(){
         int i=0;
         pthread_t tid[b];
 
-        struct arguments_passed{
+        struct data{
                 int startInd;
                 int endInd;
                 int *int_arr;
@@ -163,9 +163,7 @@ int main(){
                 int max;
         };
 
-        struct arguments_passed args[b];
-
-
+        struct data args[b];
 
         for(int i=0; i<b; i++) {
             args[i].int_arr = arr;
@@ -214,6 +212,7 @@ int main(){
         scanf("%d",&n1);
         write(fd5[1],&n1,sizeof(int));
         wait(NULL);
+        printf("GoodBye!");
         close(fd1[1]);
     }
 
