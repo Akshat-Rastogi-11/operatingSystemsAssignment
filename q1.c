@@ -36,7 +36,7 @@ int main(){
     int fd4[2];
     int fd5[2];
 
-    int n1=0,n2=0,n3=0;
+    int n1=0,n2=0,n3=0,n4=0;
     pid_t p,p2;
     int a=0,b=0,c=0,d=0,e=0;
     if (pipe(fd1)==-1)
