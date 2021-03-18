@@ -10,7 +10,7 @@
 //function for finding min and max of subarrays
 void* find_min_max(void* p) {
 
-    struct data{
+    struct arguments_passed{
         int startInd;
         int endInd;
         int *int_arr;
@@ -18,7 +18,7 @@ void* find_min_max(void* p) {
         int max;
     };
 
-    struct data* args = (struct data*)p;
+    struct arguments_passed* args = (struct arguments_passed*)p;
 
     args->min = args->int_arr[args->startInd];
     args->max = args->int_arr[args->startInd];
@@ -38,7 +38,7 @@ int main(){
 
     int n1=0,n2=0,n3=0;
     pid_t p,p2;
-    int a=0,b=0;
+    int a=0,b=0,c=0,d=0,e=0;
     if (pipe(fd1)==-1)
     {
         fprintf(stderr, "Pipe Failed" );
@@ -133,29 +133,29 @@ int main(){
 
     }
     else{
-        read(fd2[0],&a,sizeof(int));
-        printf("Child2 received %d as no. of threads \n",a);
+        read(fd2[0],&b,sizeof(int));
+        printf("Child2 received %d as no. of threads \n",b);
         close(fd2[0]);
-        read(fd3[0],&n3,sizeof(int));
-        printf("Child2 received %d as number of array elements \n",n3);
+        read(fd3[0],&c,sizeof(int));
+        printf("Child2 received %d as number of array elements \n",c);
         close(fd3[0]);
-        int* arr = (int*) calloc(n3, sizeof(int));
+        int* arr = (int*) calloc(c, sizeof(int));
 
-        for(int i = 0; i < n3; ++i) {
-            read(fd4[0],&b,sizeof(int));
-            arr[i] = b;
+        for(int i = 0; i < c; ++i) {
+            read(fd4[0],&d,sizeof(int));
+            arr[i] = d;
         }
         close(fd4[0]);
 
-        int element_no = n3/a; //no. of elements in each subarray
+        int element_no = c/b; //no. of elements in each subarray
         int temp = 0;
 
 
         //creating thread
         int i=0;
-        pthread_t tid[a];
+        pthread_t tid[b];
 
-        struct data{
+        struct arguments_passed{
                 int startInd;
                 int endInd;
                 int *int_arr;
@@ -163,9 +163,11 @@ int main(){
                 int max;
         };
 
-        struct data args[a];
+        struct arguments_passed args[b];
 
-        for(int i=0; i<a; i++) {
+
+
+        for(int i=0; i<b; i++) {
             args[i].int_arr = arr;
             args[i].startInd = temp;
             args[i].endInd = temp+element_no-1;
@@ -179,7 +181,7 @@ int main(){
         int final_min=INT_MAX;
         int final_max=INT_MIN;
 
-        for(int i=0; i<a; i++) {
+        for(int i=0; i<b; i++) {
 
             args[i].startInd = temp;
             args[i].endInd = temp+element_no-1;
