@@ -116,29 +116,23 @@ int main(){
     else if(p>0){
         printf("Enter to parent the no. of child threads to be created: ");
         scanf("%d",&n2);
-        close(fd2[READ_END]);
-        write(fd2[WRITE_END],&n2,sizeof(int));
-        close(fd2[WRITE_END]);
-        for(int x=0;x<255;x++){
-        	for(int y=0;y<255;y++){
-        		;
-        	}
-        }
         printf("Enter to parent number of array elements for Child2: ");
         scanf("%d",&n3);
-        close(fd3[READ_END]);
-        write(fd3[WRITE_END],&n3,sizeof(int));
-        close(fd3[WRITE_END]);
-        for(int x=0;x<255;x++){
-        	for(int y=0;y<255;y++){
-        		;
-        	}
-        }
         int values[n3];
         printf("Enter to parent the array elements for Child2: ");
-        close(fd4[READ_END]);
         for(int i = 0; i < n3; ++i) {
             scanf("%d", &values[i]);
+         
+        }
+        close(fd2[READ_END]);
+        write(fd2[WRITE_END],&n2,sizeof(int));
+        close(fd2[WRITE_END]);     
+        close(fd3[READ_END]);
+        write(fd3[WRITE_END],&n3,sizeof(int));
+        close(fd3[WRITE_END]);               
+        close(fd4[READ_END]);
+        for(int i = 0; i < n3; ++i) {
+          
             write(fd4[WRITE_END],&values[i],sizeof(int));
         }
         close(fd4[WRITE_END]);
