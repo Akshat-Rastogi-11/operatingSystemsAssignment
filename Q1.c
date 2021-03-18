@@ -7,6 +7,9 @@
 #include<pthread.h>
 #include<limits.h>
 
+#define READ_END 0
+#define WRITE_END 1
+
 //stores the thread data
 typedef struct data {
     int* int_arr;
@@ -81,12 +84,14 @@ int main(){
     else if(p>0){
         printf("Enter to parent the no. of terms of Fibonacci series: ");
         scanf("%d",&n1);
-        write(fd1[1],&n1,sizeof(int));
+        close(fd1[READ_END]);
+        write(fd1[WRITE_END],&n1,sizeof(int));
         wait(NULL);
-        close(fd1[1]);
+        close(fd1[WRITE_END]);
     }
     else {
-        read(fd1[0],&a,sizeof(int));
+        close(fd[WRITE_END]);
+        read(fd1[READ_END],&a,sizeof(int));
         printf("Child1 received %d\n",a);
         int term1 = 1, term2 = 1, nextTerm = 0;
         printf("The Fibonacci Series printed by Child1 is: ");
@@ -97,7 +102,7 @@ int main(){
             term2 = nextTerm;
         }
         printf( "\n" );
-        close(fd1[0]);
+        close(fd1[READ_END]);
         exit(0);
     }
 
@@ -111,39 +116,45 @@ int main(){
     else if(p>0){
         printf("Enter to parent the no. of child threads to be created: ");
         scanf("%d",&n2);
-        write(fd2[1],&n2,sizeof(int));
-        close(fd2[1]);
+        close(fd2[READ_END]);
+        write(fd2[WRITE_END],&n2,sizeof(int));
+        close(fd2[WRITE_END]);
         for(int k=0;k<255555;k++);
         printf("Enter to parent number of array elements for Child2: ");
         scanf("%d",&n3);
-        write(fd3[1],&n3,sizeof(int));
-        close(fd3[1]);
+        close(fd3[READ_END]);
+        write(fd3[WRITE_END],&n3,sizeof(int));
+        close(fd3[WRITE_END]);
         for(int k=0;k<255555;k++);
         int values[n3];
         printf("Enter to parent the array elements for Child2: ");
+        close(fd4[READ_END]);
         for(int i = 0; i < n3; ++i) {
             scanf("%d", &values[i]);
-            write(fd4[1],&values[i],sizeof(int));
+            write(fd4[WRITE_END],&values[i],sizeof(int));
         }
-        close(fd4[1]);
+        close(fd4[WRITE_END]);
         wait(NULL);
 
 
     }
     else{
-        read(fd2[0],&a,sizeof(int));
+        close(fd2[WRITE_END]);
+        close(fd3[WRITE_END]);
+        close(fd4[WRITE_END]);
+        read(fd2[READ_END],&a,sizeof(int));
         printf("Child2 received %d as no. of threads \n",a);
-        close(fd2[0]);
-        read(fd3[0],&n3,sizeof(int));
+        close(fd2[READ_END]);
+        read(fd3[READ_END],&n3,sizeof(int));
         printf("Child2 received %d as number of array elements \n",n3);
-        close(fd3[0]);
+        close(fd3[READ_END]);
         int* arr = (int*) calloc(n3, sizeof(int));
 
         for(int i = 0; i < n3; ++i) {
-            read(fd4[0],&b,sizeof(int));
+            read(fd4[READ_END],&b,sizeof(int));
             arr[i] = b;
         }
-        close(fd4[0]);
+        close(fd4[READ_END]);
 
         //array that stores the thread data
         data thread_data[a];
@@ -197,15 +208,18 @@ int main(){
     else if(p>0){
         printf("Enter the no. for factorial computation in parent: ");
         scanf("%d",&n1);
-        write(fd5[1],&n1,sizeof(int));
+        close(fd5[READ_END]);
+        write(fd5[WRITE_END],&n1,sizeof(int));
+        close(fd1[WRITE_END]);
         wait(NULL);
-        close(fd1[1]);
         printf("Goodbye");
     }
 
 
     else {
-        read(fd5[0],&a,sizeof(int));
+        close(fd5[WRITE_END]);
+        read(fd5[READ_END],&a,sizeof(int));
+        close(fd5[READ_END]);
         printf("Child3 received 5 for factorial computation %d\n",a);
         int ans = 1;
         printf("Factorial computed by Child3 is ");
@@ -213,7 +227,7 @@ int main(){
             ans = ans*i;
         }
         printf( "%d \n",ans );
-        close(fd5[0]);
+        
         exit(0);
     }
 
