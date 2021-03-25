@@ -217,15 +217,19 @@ int main() {
     /********************* OUTPUT STATEMENTS **********************************/
     // ************* printing waiting time***********************
     int waitSum=0;
+    int count=0;
     for(int i=0;i<numProcess;i++){
+        if(statusProcess[i]){
         waitSum+= waitTime[i];
         printf("wait time for process %d is: %lf ",i+1,waitTime[i]); 
         printf("\n");
+        count++;
+        }
     }
 
     // ****************printing avg time********************
     printf("\n");
-    double avgTime = (double)waitSum/(double)numProcess;
+    double avgTime = (double)waitSum/(double)count;
     printf("Average time is : %lf \n", avgTime);
 
     // **************printing of process execution order**********************
@@ -240,8 +244,9 @@ int main() {
     	printf("\n");
     // ****************** end time of each process************************
     for(int i=0;i<numProcess;i++){
-        printf("P%d finished at: %d",i+1, lastEnd[i] );
+       if(statusProcess[i]){ printf("P%d finished at: %d",i+1, lastEnd[i] );
         printf("\n");
+        }
     }
     
     
